@@ -1,0 +1,770 @@
+{
+	"info": {
+		"_postman_id": "e0991326-8345-4672-93a8-696803828939",
+		"name": "StudentDetails",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13082503"
+	},
+	"item": [
+		{
+			"name": "Create Student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = responseCode.code;\r",
+							"\r",
+							"switch (response) { \r",
+							"    case 201:\r",
+							"        var jsonData = pm.response.json()\r",
+							"       \r",
+							"        pm.test(\"You have successfully create the student record.\")\r",
+							"        pm.environment.set(\"id\", jsonData.id)\r",
+							"        \r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unable to identify employee\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var first_name = pm.variables.replaceIn(\"{{$randomFirstName}}\")\r",
+							"console.log(\"First Name: \"+first_name)\r",
+							"pm.environment.set(\"first_name\", first_name)\r",
+							"\r",
+							"var middle_name = pm.variables.replaceIn(\"{{$randomFirstName}}\")\r",
+							"console.log(\"Middle Name: \"+middle_name)\r",
+							"pm.environment.set(\"middle_name\", middle_name)\r",
+							"\r",
+							"var last_name = pm.variables.replaceIn(\"{{$randomLastName}}\")\r",
+							"console.log(\"Last Name: \"+last_name)\r",
+							"pm.environment.set(\"last_name\", last_name)\r",
+							"\r",
+							"//Genrate random Date of Birth in MM/DD/YY Format and the DOB always fall in between 1990 and 1999\r",
+							"function randomDate(start, end) {\r",
+							"        return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));\r",
+							"}\r",
+							"var date = randomDate(new Date(2000, 0, 1), new Date());\r",
+							"var year_last_integer = Math.floor(Math.random() * 10);\r",
+							"var formattedDate = (date.getMonth()+1) + '-' + date.getDate() + '-' +  '199' + year_last_integer;\r",
+							"pm.environment.set(\"date_of_birth\", formattedDate);\r",
+							"console.log(\"DOB: \" + formattedDate);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"first_name\": \"{{first_name}}\",\r\n  \"middle_name\": \"{{middle_name}}\",\r\n  \"last_name\": \"{{last_name}}\",\r\n  \"date_of_birth\": \"{{date_of_birth}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/studentsDetails",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"studentsDetails"
+					]
+				},
+				"description": "## Note: Create Data Sets Using the Dynamic Random Variables."
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Crated Student Details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = responseCode.code;\r",
+							"\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        var jsonData = pm.response.json()\r",
+							"        \r",
+							"        pm.test(\"First Name Validation\", function(){\r",
+							"            pm.expect(jsonData.data.first_name).to.eql(pm.environment.get(\"first_name\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Middle Name Validation\", function(){\r",
+							"            pm.expect(jsonData.data.middle_name).to.eql(pm.environment.get(\"middle_name\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Last Name Validation\", function(){\r",
+							"            pm.expect(jsonData.data.last_name).to.eql(pm.environment.get(\"last_name\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Date of Birth Validation\", function(){\r",
+							"            pm.expect(jsonData.data.date_of_birth).to.eql(pm.environment.get(\"date_of_birth\"))\r",
+							"        })\r",
+							"\r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unauthorized-401\");\r",
+							"        break;\r",
+							"\r",
+							"    case 403:\r",
+							"        pm.test(\"Forbidden Access-403\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/studentsDetails/{{id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"studentsDetails",
+						"{{id}}"
+					]
+				},
+				"description": "## In the test case you need to validate the following field values:\n\n- First Name\n- Middle Name\n- Last Name\n- Date of Birth"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = responseCode.code;\r",
+							"\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        var jsonData = pm.response.json()\r",
+							"        \r",
+							"        pm.test(\"Success Message\", function(){\r",
+							"            pm.expect(jsonData.msg).to.eql(\"update  data success\")\r",
+							"        })\r",
+							"\r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unauthorized-401\");\r",
+							"        break;\r",
+							"\r",
+							"    case 403:\r",
+							"        pm.test(\"Forbidden Access-403\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var first_name = pm.variables.replaceIn(\"{{$randomFirstName}}\")\r",
+							"console.log(\"First Name: \"+first_name)\r",
+							"pm.environment.set(\"first_name\", first_name)\r",
+							"\r",
+							"var middle_name = pm.variables.replaceIn(\"{{$randomFirstName}}\")\r",
+							"console.log(\"Middle Name: \"+middle_name)\r",
+							"pm.environment.set(\"middle_name\", middle_name)\r",
+							"\r",
+							"var last_name = pm.variables.replaceIn(\"{{$randomLastName}}\")\r",
+							"console.log(\"Last Name: \"+last_name)\r",
+							"pm.environment.set(\"last_name\", last_name)\r",
+							"\r",
+							"//Genrate random Date of Birth in MM/DD/YY Format and the DOB always fall in between 1990 and 1999\r",
+							"function randomDate(start, end) {\r",
+							"        return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));\r",
+							"}\r",
+							"var date = randomDate(new Date(2000, 0, 1), new Date());\r",
+							"var year_last_integer = Math.floor(Math.random() * 10);\r",
+							"var formattedDate = (date.getMonth()+1) + '-' + date.getDate() + '-' +  '199' + year_last_integer;\r",
+							"pm.environment.set(\"date_of_birth\", formattedDate);\r",
+							"console.log(\"DOB: \" + formattedDate);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableUrlEncoding": true,
+				"followRedirects": false,
+				"followOriginalHttpMethod": false
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\":{{id}},\r\n    \"first_name\": \"{{first_name}}\",\r\n    \"middle_name\": \"{{middle_name}}\",\r\n    \"last_name\": \"{{last_name}}\",\r\n    \"date_of_birth\": \"{{date_of_birth}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/studentsDetails/{{id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"studentsDetails",
+						"{{id}}"
+					]
+				},
+				"description": "## Note: Create Data Sets Using the Dynamic Random Variables.\n\n## In the test case you need to validate the following field values:\n\n1. Only Message"
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Updated Student Details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = responseCode.code;\r",
+							"\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        var jsonData = pm.response.json()\r",
+							"        \r",
+							"        pm.test(\"First Name Validation\", function(){\r",
+							"            pm.expect(jsonData.data.first_name).to.eql(pm.environment.get(\"first_name\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Middle Name Validation\", function(){\r",
+							"            pm.expect(jsonData.data.middle_name).to.eql(pm.environment.get(\"middle_name\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Last Name Validation\", function(){\r",
+							"            pm.expect(jsonData.data.last_name).to.eql(pm.environment.get(\"last_name\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Date of Birth Validation\", function(){\r",
+							"            pm.expect(jsonData.data.date_of_birth).to.eql(pm.environment.get(\"date_of_birth\"))\r",
+							"        })\r",
+							"\r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unauthorized-401\");\r",
+							"        break;\r",
+							"\r",
+							"    case 403:\r",
+							"        pm.test(\"Forbidden Access-403\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/studentsDetails/{{id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"studentsDetails",
+						"{{id}}"
+					]
+				},
+				"description": "## In the test case you need to validate the following field values:\n\n- First Name\n- Middle Name\n- Last Name\n- Date of Birth"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Technicalskills",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var yearexp = pm.variables.replaceIn(\"{{$randomInt}}\")\r",
+							"console.log(\"Year of experience: \"+yearexp)\r",
+							"pm.environment.set(\"yearexp\", yearexp)\r",
+							"\r",
+							"\r",
+							"//Genrate random Date of Birth in MM/DD/YY Format and the DOB always fall in between 1990 and 1999\r",
+							"function randomDate(start, end) {\r",
+							"        return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));\r",
+							"}\r",
+							"\r",
+							"var date = randomDate(new Date(2000, 0, 1), new Date());\r",
+							"var year_last_integer = Math.floor(Math.random() * 10);\r",
+							"var formattedDate = (date.getMonth()+1) + '-' + date.getDate() + '-' +  '199' + year_last_integer;\r",
+							"pm.environment.set(\"lastused\", formattedDate);\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = responseCode.code;\r",
+							"\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        var jsonData = pm.response.json()\r",
+							"        pm.test(\"You have successfully Create Technical Skills\", function(){\r",
+							"            pm.expect(jsonData.msg).to.eql(\"Add  data success\")\r",
+							"        })\r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unable to identify employee\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 1,\r\n  \"language\": [\r\n    \"English\",\r\n    \"Bangla\"\r\n  ],\r\n  \"yearexp\": \"{{yearexp}}\",\r\n  \"lastused\": \"{{lastused}}\",\r\n  \"st_id\": {{id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/technicalskills",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"technicalskills"
+					]
+				},
+				"description": "## Note: Create Data Sets Using the Dynamic Random Variables.\n\n## In the test case you need to validate the following field values:\n\n1. Only Message"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Student Address",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var House_Number = pm.variables.replaceIn(\"{{$randomInt}}\")\r",
+							"console.log(\"House Number: \"+House_Number)\r",
+							"pm.environment.set(\"House_Number\", House_Number)\r",
+							"\r",
+							"var City = pm.variables.replaceIn(\"{{$randomCity}}\")\r",
+							"console.log(\"City: \"+City)\r",
+							"pm.environment.set(\"City\", City)\r",
+							"\r",
+							"var State = pm.variables.replaceIn(\"{{$randomStreetName}}\")\r",
+							"console.log(\"State: \"+State)\r",
+							"pm.environment.set(\"State\", State)\r",
+							"\r",
+							"var Country = pm.variables.replaceIn(\"{{$randomCountry}}\")\r",
+							"console.log(\"Country: \"+Country)\r",
+							"pm.environment.set(\"Country\", Country)\r",
+							"\r",
+							"var Std_Code1 = pm.variables.replaceIn(\"{{$randomInt}}\")\r",
+							"console.log(\"Std Code1: \"+Std_Code1)\r",
+							"pm.environment.set(\"Std_Code1\", Std_Code1)\r",
+							"\r",
+							"var Home1 = pm.variables.replaceIn(\"{{$randomStreetAddress}}\")\r",
+							"console.log(\"Home1: \"+Home1)\r",
+							"pm.environment.set(\"Home1\", Home1)\r",
+							"\r",
+							"var Mobile1 = pm.variables.replaceIn(\"{{$randomPhoneNumber}}\")\r",
+							"console.log(\"Mobile1: \"+Mobile1)\r",
+							"pm.environment.set(\"Mobile1\", Mobile1)\r",
+							"\r",
+							"var Std_Code2 = pm.variables.replaceIn(\"{{$randomInt}}\")\r",
+							"console.log(\"Std Code2: \"+Std_Code2)\r",
+							"pm.environment.set(\"Std_Code2\", Std_Code2)\r",
+							"\r",
+							"var Home2 = pm.variables.replaceIn(\"{{$randomStreetAddress}}\")\r",
+							"console.log(\"Home2: \"+Home2)\r",
+							"pm.environment.set(\"Home2\", Home2)\r",
+							"\r",
+							"var Mobile2 = pm.variables.replaceIn(\"{{$randomPhoneNumber}}\")\r",
+							"console.log(\"Mobile2: \"+Mobile2)\r",
+							"pm.environment.set(\"Mobile2\", Mobile2)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = responseCode.code;\r",
+							"\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        var jsonData = pm.response.json()\r",
+							"        pm.test(\"You have successfully Create Technical Skills\", function(){\r",
+							"            pm.expect(jsonData.msg).to.eql(\"Add  data success\")\r",
+							"        })\r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unable to identify employee\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Permanent_Address\": {\r\n    \"House_Number\": \"{{House_Number}}\",\r\n    \"City\": \"{{City}}\",\r\n    \"State\": \"{{State}}\",\r\n    \"Country\": \"{{Country}}\",\r\n    \"PhoneNumber\": [\r\n      {\r\n        \"Std_Code\": \"{{Std_Code1}}\",\r\n        \"Home\": \"{{Home1}}\",\r\n        \"Mobile\": \"{{Mobile1}}\"\r\n      },\r\n      {\r\n        \"Std_Code\": \"{{Std_Code2}}\",\r\n        \"Home\": \"{{Home2}}\",\r\n        \"Mobile\": \"{{Mobile2}}\"\r\n      }\r\n    ]\r\n  },\r\n  \"stId\": {{id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/addresses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"addresses"
+					]
+				},
+				"description": "## Note: Create Data Sets Using the Dynamic Random Variables.\n\n## In the test case you need to validate the following field values:\n\n1. Only Message"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Student Full Details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = responseCode.code;\r",
+							"\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        var jsonData = pm.response.json()\r",
+							"\r",
+							"        pm.test(\"First Name Validation\", function(){\r",
+							"            pm.expect(jsonData.data.first_name).to.eql(pm.environment.get(\"first_name\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Middle Name Validation\", function(){\r",
+							"            pm.expect(jsonData.data.middle_name).to.eql(pm.environment.get(\"middle_name\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Last Name Validation\", function(){\r",
+							"            pm.expect(jsonData.data.last_name).to.eql(pm.environment.get(\"last_name\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Date of Birth Validation\", function(){\r",
+							"            pm.expect(jsonData.data.date_of_birth).to.eql(pm.environment.get(\"date_of_birth\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Language Validation\", function(){\r",
+							"            pm.expect(jsonData.data.TechnicalDetails[0].language[0]).to.eql(\"English\")\r",
+							"            pm.expect(jsonData.data.TechnicalDetails[0].language[1]).to.eql(\"Bangla\")\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Year Of Experience Validation\", function(){\r",
+							"            pm.expect(jsonData.data.TechnicalDetails[0].yearexp).to.eql(pm.environment.get(\"yearexp\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Last Used Date Validation\", function(){\r",
+							"            pm.expect(jsonData.data.TechnicalDetails[0].lastused).to.eql(pm.environment.get(\"lastused\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"House Number Validation\", function(){\r",
+							"            pm.expect(jsonData.data.Address[0].Permanent_Address.House_Number).to.eql(pm.environment.get(\"House_Number\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"City Validation\", function(){\r",
+							"            pm.expect(jsonData.data.Address[0].Permanent_Address.City).to.eql(pm.environment.get(\"City\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"State Validation\", function(){\r",
+							"            pm.expect(jsonData.data.Address[0].Permanent_Address.State).to.eql(pm.environment.get(\"State\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Country Validation\", function(){\r",
+							"            pm.expect(jsonData.data.Address[0].Permanent_Address.Country).to.eql(pm.environment.get(\"Country\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Std Code Validation\", function(){\r",
+							"            pm.expect(jsonData.data.Address[0].Permanent_Address.PhoneNumber[0].Std_Code).to.eql(pm.environment.get(\"Std_Code1\"))\r",
+							"            pm.expect(jsonData.data.Address[0].Permanent_Address.PhoneNumber[1].Std_Code).to.eql(pm.environment.get(\"Std_Code2\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Home Address Validation\", function(){\r",
+							"            pm.expect(jsonData.data.Address[0].Permanent_Address.PhoneNumber[0].Home).to.eql(pm.environment.get(\"Home1\"))\r",
+							"            pm.expect(jsonData.data.Address[0].Permanent_Address.PhoneNumber[1].Home).to.eql(pm.environment.get(\"Home2\"))\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Mobile Validation\", function(){\r",
+							"            pm.expect(jsonData.data.Address[0].Permanent_Address.PhoneNumber[0].Mobile).to.eql(pm.environment.get(\"Mobile1\"))\r",
+							"            pm.expect(jsonData.data.Address[0].Permanent_Address.PhoneNumber[1].Mobile).to.eql(pm.environment.get(\"Mobile2\"))\r",
+							"        })\r",
+							"\r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unable to identify employee\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/FinalStudentDetails/{{id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"FinalStudentDetails",
+						"{{id}}"
+					]
+				},
+				"description": "## In the test case you need to validate the following field values:\n\n- First Name\n- Middle Name\n- Last Name\n- Date of Birth\n- Language\n- Year Of Experience\n- Last Used Date\n- House Number\n- City\n- State\n- Country\n- Std Code\n- Home Address\n- Mobile"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Specific Student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = responseCode.code;\r",
+							"\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        var jsonData = pm.response.json()\r",
+							"        pm.test(\"You have successfully Delete the Student Record\", function(){\r",
+							"            pm.expect(jsonData.msg).to.eql(\"Delete  data success\")\r",
+							"        })\r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unable to identify employee\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/studentsDetails/{{id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"studentsDetails",
+						"{{id}}"
+					]
+				},
+				"description": "## In the test case you need to validate the following field values:\n\n- Only Message"
+			},
+			"response": []
+		}
+	]
+}
