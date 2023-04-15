@@ -85,7 +85,6 @@ npm install -g newman-reporter-htmlextra
 	> In the test case you need to validate the following field values:
 	1. > Only Message
 
-
 ## Newman Report Summary:
 ![Newman Report Summary](https://user-images.githubusercontent.com/70250199/232209683-ddb8e3c5-4f23-4355-8919-61cd6ddca91a.png)
 
